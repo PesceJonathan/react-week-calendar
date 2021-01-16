@@ -132,6 +132,12 @@ class WeekCalendar extends React.Component {
 
   handleCellMouseEnter = (col, row) => {
     if (this.state.startSelectionPosition != null) {
+      if (this.state.startSelectionPosition.x != col) 
+        return;
+
+      if (this.props.selectedIntervals)
+        console.log(this.props.selectedIntervals)
+
       this.setState({
         mousePosition: {
           x: col,
