@@ -47,10 +47,10 @@ const defaultProps = {
   numberOfDays: 7,
   scaleHeaderTitle: '',
   headerCellComponent: HeaderCell,
-  dayFormat: 'dd., DD.MM',
+  dayFormat: 'ddd, DD',
   startTime: moment({ h: 0, m: 0 }),
   endTime: moment({ h: 23, m: 59 }),
-  scaleUnit: 15,
+  scaleUnit: 60,
   scaleFormat: 'HH:mm',
   cellHeight: 25,
   dayCellComponent: DayCell,
@@ -176,11 +176,11 @@ class WeekCalendar extends React.Component {
     const endCol = mousePosition.x;
     const endRow = mousePosition.y;
 
-    const minDayIndex = Math.min(startSelectionPosition.x, endCol);
-    const maxDayIndex = Math.max(startSelectionPosition.x, endCol);
+    const minDayIndex = Math.min(startSelectionPosition.x, startSelectionPosition.x);
+    const maxDayIndex = Math.max(startSelectionPosition.x, startSelectionPosition.x);
 
     const startDay = moment(firstDay).add(minDayIndex, 'days');
-    const endDay = moment(firstDay).add(maxDayIndex, 'days');
+    const endDay = moment(firstDay).add(maxDayIndex, 'days'); //TODO
 
     const minCellIndex = Math.min(startSelectionPosition.y, endRow);
     const maxCellIndex = Math.max(startSelectionPosition.y, endRow) + 1;
@@ -310,7 +310,7 @@ class WeekCalendar extends React.Component {
             endY = scaleIntervals.length;
           }
           const top = startY * cellHeight;
-          const width = (columnDimensions[dayIndex].width - eventSpacing) / groupIntersection;
+          const width = (columnDimensions[dayIndex].width) / groupIntersection;
 
           // TODO: dividing  by the GroupIntersection doesn't seem to work all that great...
           const left = columnDimensions[dayIndex].left + ((width + Math.floor(eventSpacing / groupIntersection)) * beforeIntersectionNumber);

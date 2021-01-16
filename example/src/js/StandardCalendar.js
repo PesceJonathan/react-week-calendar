@@ -1,6 +1,7 @@
 import React from 'react';
 import moment from 'moment';
-import WeekCalendar from 'react-week-calendar';
+//import WeekCalendar from 'react-week-calendar';
+import WeekCalendar from "../../../src/WeekCalendar"
 
 export default class StandardCalendar extends React.Component {
 
@@ -20,12 +21,6 @@ export default class StandardCalendar extends React.Component {
           start: moment({h: 13, m: 0}).add(2,'d'),
           end: moment({h: 13, m: 45}).add(2,'d'),
           value: "Closed"
-        },
-        {
-          uid: 3,
-          start: moment({h: 11, m: 0}),
-          end: moment({h: 14, m: 0}),
-          value: "Reserved by White"
         },
       ]
     }
@@ -68,9 +63,9 @@ export default class StandardCalendar extends React.Component {
 
   render() {
     return <WeekCalendar
-      startTime = {moment({h: 9, m: 0})}
-      endTime = {moment({h: 15, m: 30})}
-      numberOfDays= {14}
+      startTime = {moment({h: 0, m: 0})}
+      endTime = {moment({h: 23, m: 59})}
+      numberOfDays= {7}
       selectedIntervals = {this.state.selectedIntervals}
       onIntervalSelect = {this.handleSelect}
       onIntervalUpdate = {this.handleEventUpdate}

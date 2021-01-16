@@ -50,7 +50,7 @@ class Modal extends React.Component {
           ref={(el) => { this.input = el; }}
           className="customModal__input"
           type="text"
-          placeholder="Enter something"
+          placeholder="Enter a price"
           defaultValue={value}
         />
         <button className="customModal__button" onClick={this.handleRemove}>Delete</button>
