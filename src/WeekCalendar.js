@@ -47,7 +47,7 @@ const defaultProps = {
   numberOfDays: 7,
   scaleHeaderTitle: '',
   headerCellComponent: HeaderCell,
-  dayFormat: 'ddd, DD',
+  dayFormat: 'ddd',
   startTime: moment({ h: 0, m: 0 }),
   endTime: moment({ h: 23, m: 59 }),
   scaleUnit: 60,
@@ -77,7 +77,30 @@ class WeekCalendar extends React.Component {
       },
       startSelectionPosition: null,
       preselectedInterval: null,
+      selectedCols: this.createSelectedColsState(props)
     };
+  }
+
+  createSelectedColsState(props) {
+    const weekDays = ['Sun', 'Mon','Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+    const selectedCols = {}
+    const selected = props.selectedIntervals;
+
+    selected.map(interval => {
+      let col = weekDays.indexOf(interval.start.format('ddd'))
+
+      if (selectedCols[col] === undefined) {
+        let start = interval.start.format('HH');
+        let end = interval.end.format('HH');
+        selectedCols[col] = [{start: start, end:end}]
+      } else {
+        let start = interval.start.format('HH');
+        let end = interval.end.format('HH');
+        selectedCols[col].push({start: start, end: end})
+      }
+    })
+
+    return selectedCols;
   }
 
   componentDidMount() {
@@ -91,6 +114,7 @@ class WeekCalendar extends React.Component {
       const scaleIntervals = Utils.getIntervalsByDuration(nextProps.scaleUnit, nextProps.startTime, nextProps.endTime);
       this.setState({
         scaleIntervals,
+        selectedCols: this.createSelectedColsState(nextProps)
       });
     }
   }
@@ -131,12 +155,25 @@ class WeekCalendar extends React.Component {
   }
 
   handleCellMouseEnter = (col, row) => {
-    if (this.state.startSelectionPosition != null) {
-      if (this.state.startSelectionPosition.x != col) 
+    const {selectedIntervals} = this.props;
+    const {selectedCols, startSelectionPosition} = this.state;
+
+    if (startSelectionPosition != null) {
+      if (startSelectionPosition.x != col) 
         return;
 
-      if (this.props.selectedIntervals)
-        console.log(this.props.selectedIntervals)
+      if (selectedCols[col] !== undefined) {  
+        let array = selectedCols[col];
+
+        startSelectionPosition
+        for (let i = 0; i < array.length; i++) {
+          if (startSelectionPosition.y > array[i].start && row <= array[i].end)
+            return;
+            
+          if (startSelectionPosition.y < array[i].start && row >= array[i].start)
+            return;
+        }
+      }
 
       this.setState({
         mousePosition: {
