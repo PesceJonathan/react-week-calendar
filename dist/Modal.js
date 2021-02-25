@@ -102,7 +102,7 @@ var Modal = function (_React$Component) {
           },
           className: 'customModal__input',
           type: 'text',
-          placeholder: 'Enter something',
+          placeholder: 'Enter a price',
           defaultValue: value
         }),
         _react2.default.createElement(

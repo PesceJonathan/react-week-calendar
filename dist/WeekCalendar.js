@@ -97,10 +97,10 @@ var defaultProps = {
   numberOfDays: 7,
   scaleHeaderTitle: '',
   headerCellComponent: _HeaderCell2.default,
-  dayFormat: 'dd., DD.MM',
+  dayFormat: 'ddd',
   startTime: (0, _moment2.default)({ h: 0, m: 0 }),
   endTime: (0, _moment2.default)({ h: 23, m: 59 }),
-  scaleUnit: 15,
+  scaleUnit: 60,
   scaleFormat: 'HH:mm',
   cellHeight: 25,
   dayCellComponent: _DayCell2.default,
@@ -136,12 +136,36 @@ var WeekCalendar = function (_React$Component) {
         left: 0
       },
       startSelectionPosition: null,
-      preselectedInterval: null
+      preselectedInterval: null,
+      selectedCols: _this.createSelectedColsState(props)
     };
     return _this;
   }
 
   _createClass(WeekCalendar, [{
+    key: 'createSelectedColsState',
+    value: function createSelectedColsState(props) {
+      var weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      var selectedCols = {};
+      var selected = props.selectedIntervals;
+
+      selected.map(function (interval) {
+        var col = weekDays.indexOf(interval.start.format('ddd'));
+
+        if (selectedCols[col] === undefined) {
+          var start = interval.start.format('HH');
+          var end = interval.end.format('HH');
+          selectedCols[col] = [{ start: start, end: end }];
+        } else {
+          var _start = interval.start.format('HH');
+          var _end = interval.end.format('HH');
+          selectedCols[col].push({ start: _start, end: _end });
+        }
+      });
+
+      return selectedCols;
+    }
+  }, {
     key: 'componentDidMount',
     value: function componentDidMount() {
       this.calculateColumnDimension();
@@ -154,7 +178,8 @@ var WeekCalendar = function (_React$Component) {
       if (nextProps.scaleUnit !== this.props.scaleUnit || nextProps.startTime !== this.props.startTime || nextProps.endTime !== this.props.endTime) {
         var scaleIntervals = Utils.getIntervalsByDuration(nextProps.scaleUnit, nextProps.startTime, nextProps.endTime);
         this.setState({
-          scaleIntervals: scaleIntervals
+          scaleIntervals: scaleIntervals,
+          selectedCols: this.createSelectedColsState(nextProps)
         });
       }
     }
@@ -220,7 +245,7 @@ var WeekCalendar = function (_React$Component) {
               endY = scaleIntervals.length;
             }
             var top = startY * cellHeight;
-            var width = (columnDimensions[dayIndex].width) / groupIntersection;
+            var width = columnDimensions[dayIndex].width / groupIntersection;
 
             // TODO: dividing  by the GroupIntersection doesn't seem to work all that great...
             var left = columnDimensions[dayIndex].left + (width + Math.floor(eventSpacing / groupIntersection)) * beforeIntersectionNumber;
@@ -418,7 +443,26 @@ var _initialiseProps = function _initialiseProps() {
   };
 
   this.handleCellMouseEnter = function (col, row) {
-    if (_this3.state.startSelectionPosition != null) {
+    var selectedIntervals = _this3.props.selectedIntervals;
+    var _state3 = _this3.state,
+        selectedCols = _state3.selectedCols,
+        startSelectionPosition = _state3.startSelectionPosition;
+
+
+    if (startSelectionPosition != null) {
+      if (startSelectionPosition.x != col) return;
+
+      if (selectedCols[col] !== undefined) {
+        var array = selectedCols[col];
+
+        startSelectionPosition;
+        for (var i = 0; i < array.length; i++) {
+          if (startSelectionPosition.y > array[i].start && row <= array[i].end) return;
+
+          if (startSelectionPosition.y < array[i].start && row >= array[i].start) return;
+        }
+      }
+
       _this3.setState({
         mousePosition: {
           x: col,
@@ -449,10 +493,10 @@ var _initialiseProps = function _initialiseProps() {
         scaleUnit = _props4.scaleUnit,
         useModal = _props4.useModal,
         showModalCase = _props4.showModalCase;
-    var _state3 = _this3.state,
-        startSelectionPosition = _state3.startSelectionPosition,
-        mousePosition = _state3.mousePosition,
-        scaleIntervals = _state3.scaleIntervals;
+    var _state4 = _this3.state,
+        startSelectionPosition = _state4.startSelectionPosition,
+        mousePosition = _state4.mousePosition,
+        scaleIntervals = _state4.scaleIntervals;
 
 
     if (startSelectionPosition == null) {
@@ -462,11 +506,11 @@ var _initialiseProps = function _initialiseProps() {
     var endCol = mousePosition.x;
     var endRow = mousePosition.y;
 
-    var minDayIndex = Math.min(startSelectionPosition.x, endCol);
-    var maxDayIndex = Math.max(startSelectionPosition.x, endCol);
+    var minDayIndex = Math.min(startSelectionPosition.x, startSelectionPosition.x);
+    var maxDayIndex = Math.max(startSelectionPosition.x, startSelectionPosition.x);
 
     var startDay = (0, _moment2.default)(firstDay).add(minDayIndex, 'days');
-    var endDay = (0, _moment2.default)(firstDay).add(maxDayIndex, 'days');
+    var endDay = (0, _moment2.default)(firstDay).add(maxDayIndex, 'days'); //TODO
 
     var minCellIndex = Math.min(startSelectionPosition.y, endRow);
     var maxCellIndex = Math.max(startSelectionPosition.y, endRow) + 1;
@@ -500,9 +544,9 @@ var _initialiseProps = function _initialiseProps() {
   };
 
   this.removePreselectedInterval = function () {
-    var _state4 = _this3.state,
-        preselectedInterval = _state4.preselectedInterval,
-        updateEvent = _state4.updateEvent;
+    var _state5 = _this3.state,
+        preselectedInterval = _state5.preselectedInterval,
+        updateEvent = _state5.updateEvent;
 
     if (updateEvent && _this3.props.onIntervalRemove) {
       _this3.props.onIntervalRemove(preselectedInterval);
@@ -511,9 +555,9 @@ var _initialiseProps = function _initialiseProps() {
   };
 
   this.submitPreselectedInterval = function (newValue) {
-    var _state5 = _this3.state,
-        preselectedInterval = _state5.preselectedInterval,
-        updateEvent = _state5.updateEvent;
+    var _state6 = _this3.state,
+        preselectedInterval = _state6.preselectedInterval,
+        updateEvent = _state6.updateEvent;
 
 
     if (updateEvent) {

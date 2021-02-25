@@ -36,8 +36,7 @@ class DayColumn extends React.Component {
           startTime={interval.start}
           endTime={interval.end}
           cellHeight={this.props.cellHeight}
-          startSelection={this.handleStartSelection(colPos, rowPos)}
-        />
+          startSelection={this.handleStartSelection(colPos, rowPos)}/>
       </div>
     ));
 

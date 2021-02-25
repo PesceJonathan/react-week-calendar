@@ -447,6 +447,7 @@ class WeekCalendar extends React.Component {
     } = this.props;
 
     const isSelection = this.state.startSelectionPosition != null;
+    let mondayOfWeek = firstDay.startOf("isoweek");
 
     return (
       <div className={isSelection ? 'weekCalendar weekCalendar__status_selection' : 'weekCalendar'}>
@@ -455,7 +456,7 @@ class WeekCalendar extends React.Component {
         </div>
         <div className="weekCalendar__header" style={{ left: -this.state.scrollPosition.left }}>
           <CalendarHeader
-            firstDay={firstDay}
+            firstDay={mondayOfWeek}
             numberOfDays={numberOfDays}
             dayFormat={dayFormat}
             columnDimensions={this.state.columnDimensions}
@@ -472,7 +473,7 @@ class WeekCalendar extends React.Component {
         </div>
         <div className="weekCalendar__content" onScroll={this.handleScroll}>
           <CalendarBody
-            firstDay={firstDay}
+            firstDay={mondayOfWeek}
             numberOfDays={numberOfDays}
             scaleUnit={scaleUnit}
             scaleIntervals={this.state.scaleIntervals}
