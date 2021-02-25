@@ -162,8 +162,9 @@ class WeekCalendar extends React.Component {
       if (startSelectionPosition.x != col) 
         return;
 
-      if (selectedCols[col] !== undefined) {  
-        let array = selectedCols[col];
+      let colIndex = col + 1;
+      if (selectedCols[colIndex] !== undefined) { 
+        let array = selectedCols[colIndex];
 
         startSelectionPosition
         for (let i = 0; i < array.length; i++) {
@@ -189,6 +190,7 @@ class WeekCalendar extends React.Component {
       x: col,
       y: row,
     };
+    
     this.setState({
       startSelectionPosition,
       mousePosition: startSelectionPosition,
@@ -205,7 +207,9 @@ class WeekCalendar extends React.Component {
       scaleUnit,
       useModal,
       showModalCase,
+      selectedIntervals
     } = this.props;
+    
     const {
       startSelectionPosition,
       mousePosition,
@@ -216,7 +220,7 @@ class WeekCalendar extends React.Component {
       return;
     }
 
-    const endCol = mousePosition.x;
+    // const endCol = mousePosition.x; Remove so only single columns could be choosed
     const endRow = mousePosition.y;
 
     const minDayIndex = Math.min(startSelectionPosition.x, startSelectionPosition.x);
